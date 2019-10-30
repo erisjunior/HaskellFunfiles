@@ -42,14 +42,14 @@ unbox :: Box a -> a
 unbox (Box x) = x
 
 applyBoxed :: Box (a -> b) -> Box a -> Box b
-applyBoxed (Box f) (Box x) = Box (f(x))
+applyBoxed (Box f) (Box x) = Box f $ x
 
 applyWithinBox :: Box (a -> b) -> a -> Box b
-applyWithinBox (Box f) x = Box (f(x))
+applyWithinBox (Box f) x = Box f $ x
 
 composeBoxedFuns :: Box (b -> c) -> Box (a -> b) -> Box (a -> c)
-composeBoxedFuns (Box f2) (Box f1) = (Box (f2.f1))
+composeBoxedFuns (Box f2) (Box f1) = Box $ f2 . f1
 
 headOfBoxed :: Box [a] -> a
-headOfBoxed (Box (x:xs))= x
-
+headOfBoxed (Box [])    = []
+headOfBoxed (Box (x:_)) = x

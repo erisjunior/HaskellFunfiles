@@ -32,7 +32,6 @@ instance Eq Nat where
     (==) _        Zero     = False
     (==) (Succ m) (Succ n) = (==) m n
 
---
 instance Ord Nat where
 
     (<=) Zero     Zero     = True
@@ -44,9 +43,13 @@ instance Ord Nat where
     -- Howevener, you should define them WITHOUT using (<=).
     -- Both are binary functions: max m n = ..., etc.
 
-  --  min = undefined
+    min Zero     n        = Zero
+    min n        Zero     = Zero
+    min (Succ n) (Succ m) = if (min m n == m) then Succ m else Succ n
 
-  --  max = undefined
+    max Zero     n        = n
+    max n        Zero     = n
+    max (Succ n) (Succ m) = if (max m n == m) then Succ m else Succ n
 
 instance (Enum Nat) where
 
@@ -76,16 +79,13 @@ isZero :: Nat -> Bool
 isZero Zero = True
 isZero _    = False
 
---
 even :: Nat -> Bool
-even = undefined
--- even Zero  = True
--- even m     = if ((<%> m (Succ $ Succ Zero) == Zero) then True else False)
+even Zero     = True
+even (Succ n) = odd n
 
---
 odd :: Nat -> Bool
-odd = undefined
--- odd  m     = if ((<%> m (Succ $ Succ Zero) == (Succ Zero)) then True else False)
+odd Zero     = False
+odd (Succ n) = even n
 
 (<+>) :: Nat -> Nat -> Nat
 (<+>) n Zero     = n
@@ -111,13 +111,17 @@ odd = undefined
 
 --
 (</>) :: Nat -> Nat -> Nat
-(</>) = undefined
+(</>) _     Zero = error "Não se divide por zero"
+(</>) n     m
+    | n < m     = Zero
+    | otherwise = Succ Zero <+> (n <-> m) </> m
 
 --
 (<%>) :: Nat -> Nat -> Nat
-(<%>) Zero _            = Zero
-(<%>) _    Zero         = error "Não se divide por zero"
---(<%>) (Succ n) (Succ m) = ()
+(<%>) _    Zero = error "Não se divide por zero"
+(<%>) n    m
+    | n >= m    = (n <-> m) <%> m
+    | otherwise = Zero
 
 --
 (<|>) :: Nat -> Nat -> Bool
@@ -137,9 +141,9 @@ factorial :: Nat -> Nat
 factorial Zero     = Succ Zero
 factorial (Succ m) = (<*>) (Succ m) (factorial m) 
 
--- signum of a number (-1, 0, or 1)
 sg :: Nat -> Nat
-sg = undefined
+sg Zero        = Zero
+sg (Succ m)    = Succ Zero
 
 -- lo b a is the floor of the logarithm base b of a
 lo :: Nat -> Nat -> Nat
@@ -161,7 +165,6 @@ instance Num Nat where
     abs n = n
     signum = sg
     fromInteger x
-    --
         | x < 0     = error ""
         | x == 0    = Zero
         | otherwise = Succ (fromInteger (x-1))

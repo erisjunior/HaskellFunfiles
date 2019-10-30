@@ -54,7 +54,6 @@ snoc x (y:ys) = y : snoc x ys
 
 flip :: ( a -> b -> c ) -> (b -> a -> c)
 flip f x y = f y x
--- flip f = \x -> \y -> f y x
 
 (<:) :: [a] -> a -> [a]
 (<:) = flip snoc
@@ -100,18 +99,16 @@ dropWhile _ []     = []
 dropWhile f (x:xs) = (if(f x) then (xs) else (dropWhile f xs))
 
 tails :: [a] -> [[a]]
-tails []     = []
-tails (x:xs) = xs : tails xs
+tails []        = [[]]
+tails xs'@(_:xs) = xs' : tails xs
 
 init ::  [a] -> [a]
 init [x]     = []
 init (x:xs)  = x : init xs
 
 inits :: [a] -> [[a]]
-inits []     = []
-inits xs     = xs' : inits xs'
-    where 
-        xs' = init xs
+inits []     = [[]]
+inits (x:xs) = [] : map (x:) (inits xs)
 
 combinations :: [a] -> [[a]]
 combinations []     = [[]]
@@ -119,7 +116,7 @@ combinations xs     = [xs] ++ combinations (init xs)
 
 subsequences :: [a] -> [[a]]
 subsequences []     = []
-subsequences (x:xs) = combinations (x:xs) ++ subsequences xs
+subsequences (x:xs) = map (x:) (subsequences xs) ++ subsequences xs
 
 any :: (a -> Bool) -> [a] -> Bool
 any _ []     = True
@@ -161,7 +158,7 @@ elem'  y   (x:xs) = if(y == x) then True else elem' y xs
 
 filter :: (a -> Bool) -> [a] -> [a]
 filter _ []     = []
-filter f (x:xs) = (if (f x) then (x : filter f xs) else (filter f xs ))
+filter f (x:xs) = if f x then x : filter f xs else filter f xs
 
 map :: (a -> a) -> [a] -> [a]
 map _  []     = []
@@ -231,8 +228,8 @@ break p (x:xs) = if p x then (x:xs',xs'') else ([x],xs)
     where (xs',xs'') = break p xs
 
 lines :: String -> [String]
-lines ""     = []
-lines (x:(y:xs)) = if(x=='\' && y=='n') then x:(lines xs) else
+lines ""       = []
+-- lines (x:y:xs) = map  
 
 -- words
 
